@@ -60,16 +60,16 @@ public class HibernateAdapter implements Adapter {
         Session session = factory.openSession();
         Transaction tx = session.beginTransaction();
         if (this.databaseProductName.contains("MySQL") || this.databaseProductName.contains("MariaDB")) {
-            session.createSQLQuery("CREATE DATABASE IF NOT EXISTS casbin").executeUpdate();
-            session.createSQLQuery("USE casbin").executeUpdate();
+            session.createNativeQuery("CREATE DATABASE IF NOT EXISTS casbin").executeUpdate();
+            session.createNativeQuery("USE casbin").executeUpdate();
         } else if (this.databaseProductName.contains("SQLServer")) {
-            session.createSQLQuery("IF NOT EXISTS (" +
+            session.createNativeQuery("IF NOT EXISTS (" +
                     "SELECT * FROM sysdatabases WHERE name = 'casbin') CREATE DATABASE casbin ON PRIMARY " +
                     "( NAME = N'casbin', FILENAME = N'C:\\Program Files\\Microsoft SQL Server\\MSSQL.1\\MSSQL\\DATA\\casbinDB.mdf' , SIZE = 3072KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB ) " +
                     "LOG ON\n" +
                     "( NAME = N'casbin_log', FILENAME = N'C:\\Program Files\\Microsoft SQL Server\\MSSQL.1\\MSSQL\\DATA\\casbinDB_log.ldf' , SIZE = 1024KB , MAXSIZE = 2048GB , FILEGROWTH = 10%) " +
                     "COLLATE Chinese_PRC_CI_AS").executeUpdate();
-            session.createSQLQuery("USE casbin").executeUpdate();
+            session.createNativeQuery("USE casbin").executeUpdate();
         }
         tx.commit();
         session.close();
@@ -79,7 +79,7 @@ public class HibernateAdapter implements Adapter {
         Session session = factory.openSession();
         Transaction tx = session.beginTransaction();
         if (this.databaseProductName.contains("MySQL") || this.databaseProductName.contains("MariaDB")) {
-            session.createSQLQuery("CREATE TABLE IF NOT EXISTS casbin_rule (" +
+            session.createNativeQuery("CREATE TABLE IF NOT EXISTS casbin_rule (" +
                     "id INT not NULL primary key," +
                     "ptype VARCHAR(100) not NULL," +
                     "v0 VARCHAR(100)," +
@@ -89,7 +89,7 @@ public class HibernateAdapter implements Adapter {
                     "v4 VARCHAR(100)," +
                     "v5 VARCHAR(100))").executeUpdate();
         } else if (this.databaseProductName.contains("Oracle")) {
-            session.createSQLQuery("declare " +
+            session.createNativeQuery("declare " +
                     "nCount NUMBER;" +
                     "v_sql LONG;" +
                     "begin " +
@@ -110,7 +110,7 @@ public class HibernateAdapter implements Adapter {
                     "END IF;" +
                     "end;").executeUpdate();
         } else if (this.databaseProductName.contains("SQLServer")) {
-            session.createSQLQuery("if not exists (select * from sysobjects where id = object_id('casbin_rule')) " +
+            session.createNativeQuery("if not exists (select * from sysobjects where id = object_id('casbin_rule')) " +
                     "create table  casbin_rule (" +
                     "   id int, " +
                     "   ptype VARCHAR(100) , " +
@@ -131,9 +131,9 @@ public class HibernateAdapter implements Adapter {
         Session session = factory.openSession();
         Transaction tx = session.beginTransaction();
         if (this.databaseProductName.contains("MySQL") || this.databaseProductName.contains("MariaDB")) {
-            session.createSQLQuery("DROP TABLE IF EXISTS casbin_rule").executeUpdate();
+            session.createNativeQuery("DROP TABLE IF EXISTS casbin_rule").executeUpdate();
         } else if (this.databaseProductName.contains("Oracle")) {
-            session.createSQLQuery("declare " +
+            session.createNativeQuery("declare " +
                     "nCount NUMBER;" +
                     "v_sql LONG;" +
                     "begin " +
@@ -145,7 +145,7 @@ public class HibernateAdapter implements Adapter {
                     "END IF;" +
                     "end;").executeUpdate();
         } else if (this.databaseProductName.contains("SQLServer")) {
-            session.createSQLQuery("if exists (select * from sysobjects where id = object_id('casbin_rule') drop table casbin_rule").executeUpdate();
+            session.createNativeQuery("if exists (select * from sysobjects where id = object_id('casbin_rule') drop table casbin_rule").executeUpdate();
         }
         tx.commit();
         session.close();
@@ -183,7 +183,7 @@ public class HibernateAdapter implements Adapter {
     public void loadPolicy(Model model) {
         Session session = factory.openSession();
         Transaction tx = session.beginTransaction();
-        List<CasbinRule> casbinRules = session.createSQLQuery("SELECT * FROM casbin_rule").addEntity(CasbinRule.class).list();
+        List<CasbinRule> casbinRules = session.createNativeQuery("SELECT * FROM casbin_rule").addEntity(CasbinRule.class).list();
         for (CasbinRule line : casbinRules) {
             loadPolicyLine(line, model);
         }
@@ -254,7 +254,7 @@ public class HibernateAdapter implements Adapter {
                 line.getV3(),
                 line.getV4(),
                 line.getV5());
-        session.createSQLQuery(sql).executeUpdate();
+        session.createNativeQuery(sql).executeUpdate();
     }
 
     private void deleteData(Session session, String ptype, List<String> rules) {
@@ -262,7 +262,7 @@ public class HibernateAdapter implements Adapter {
         for (int i=0;i<rules.size();i++) {
             sql.append(" AND v").append(i).append(" = '").append(rules.get(i)).append("'");
         }
-        session.createSQLQuery(sql.toString()).executeUpdate();
+        session.createNativeQuery(sql.toString()).executeUpdate();
     }
 
     private CasbinRule savePolicyLine(String ptype, List<String> rule, int id) {
@@ -323,7 +323,7 @@ public class HibernateAdapter implements Adapter {
     private void reset() {
         Session session = factory.openSession();
         Transaction tx = session.beginTransaction();
-        List<CasbinRule> casbinRules = session.createSQLQuery("SELECT * FROM casbin_rule").addEntity(CasbinRule.class).list();
+        List<CasbinRule> casbinRules = session.createNativeQuery("SELECT * FROM casbin_rule").addEntity(CasbinRule.class).list();
         tx.commit();
         session.close();
 
