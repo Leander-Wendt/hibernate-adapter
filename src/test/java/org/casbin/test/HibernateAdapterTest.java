@@ -1,6 +1,6 @@
 package org.casbin.test;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import org.casbin.adapter.HibernateAdapter;
 import org.casbin.jcasbin.main.Enforcer;
 import org.casbin.jcasbin.persist.Adapter;
